@@ -9,7 +9,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
 
-  <!-- 修正版 Astronomy Engine -->
   <script src="https://cdn.jsdelivr.net/npm/astronomy-engine/astronomy.min.js"></script>
 
   <style>
@@ -338,19 +337,16 @@ const signs = [
   "Sagittarius","Capricorn","Aquarius","Pisces"
 ];
 
-function getSignFromLongitude(lon) {
-  return signs[Math.floor(lon / 30) % 12];
-}
-
 function calculateRealSign(dateObj, planet) {
 
   try {
 
-    const astroDate = Astronomy.MakeTime(dateObj);
+    const time = new Astronomy.AstroTime(dateObj);
 
     let body;
 
     switch (planet) {
+
       case "Sun":
         body = Astronomy.Body.Sun;
         break;
@@ -366,16 +362,33 @@ function calculateRealSign(dateObj, planet) {
       case "Mars":
         body = Astronomy.Body.Mars;
         break;
+
+      default:
+        return "Aries";
     }
 
-    const equ = Astronomy.Equator(body, astroDate, null, true, true);
-    const ecl = Astronomy.Ecliptic(equ);
+    // 地球中心黄道座標を取得
+    const vector = Astronomy.GeoVector(body, time, false);
 
-    return getSignFromLongitude(ecl.elon);
+    // 黄道座標変換
+    const ecliptic = Astronomy.Ecliptic(vector);
+
+    // 黄経 0〜360
+    let lon = ecliptic.elon;
+
+    if (lon < 0) {
+      lon += 360;
+    }
+
+    // 12星座へ変換
+    const signIndex = Math.floor(lon / 30);
+
+    return signs[signIndex];
 
   } catch (err) {
 
-    console.error(err);
+    console.error("星座計算エラー:", planet, err);
+
     return "Leo";
   }
 }
@@ -385,7 +398,7 @@ const traits = {
   "Aries":      { sun:"突撃", moon:"勇敢", mercury:"迅速", mars:"突進" },
   "Taurus":     { sun:"防衛", moon:"堅実", mercury:"慎重", mars:"重圧" },
   "Gemini":     { sun:"撹乱", moon:"変幻", mercury:"多角", mars:"奇襲" },
-  "Cancer":     { sun:"守護", moon:"忍耐", mercury:"慎密", mars:"波状" },
+  "Cancer":     { sun:"守護", moon:"忍耐", mercury:"精密", mars:"波状" },
   "Leo":        { sun:"覇権", moon:"威風", mercury:"大胆", mars:"猛攻" },
   "Virgo":      { sun:"精密", moon:"分析", mercury:"周到", mars:"効率" },
   "Libra":      { sun:"均衡", moon:"協調", mercury:"策謀", mars:"連携" },
