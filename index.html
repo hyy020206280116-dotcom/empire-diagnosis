@@ -6,6 +6,7 @@
   <title>第14帝國非公式 戦略部隊配属診断</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+  <!-- 天文計算ライブラリ -->
   <script src="https://cdn.jsdelivr.net/gh/cosinekitty/astronomy@master/source/js/astronomy.min.js"></script>
   
   <style>
@@ -252,94 +253,158 @@
 </div>
 
 <script>
-  (function() {
-    // 高精度天文計算
-    function getPlanetSign(date, planet) {
-      try {
-        const body = Astronomy.Body[planet];
-        const equ = Astronomy.Equator(body, date, null, false, true);
-        const ecl = Astronomy.Ecliptic(equ.ra, equ.dec);
-        let deg = ecl.lon;
-        if (deg < 0) deg += 360;
-        const signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
-        return signs[Math.floor(deg / 30)];
-      } catch(e) {
-        return "Capricorn"; // エラー時はデフォルト
-      }
+  // 高精度天文計算
+  function getPlanetSign(date, planet) {
+    try {
+      const body = Astronomy.Body[planet];
+      const equ = Astronomy.Equator(body, date, null, false, true);
+      const ecl = Astronomy.Ecliptic(equ.ra, equ.dec);
+      let deg = ecl.lon;
+      if (deg < 0) deg += 360;
+      const signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+      return signs[Math.floor(deg / 30)];
+    } catch(e) {
+      return "Capricorn"; // エラー時はデフォルト
     }
+  }
 
-    function getSign(month, day) {
-      const cutoff = [19,18,20,19,20,20,22,22,22,22,21,21];
-      const signs = ["Capricorn","Aquarius","Pisces","Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius"];
-      let idx = month - 1;
-      if (day > cutoff[idx]) idx = (idx + 1) % 12;
-      return signs[idx];
-    }
+  function getSign(month, day) {
+    const cutoff = [19,18,20,19,20,20,22,22,22,22,21,21];
+    const signs = ["Capricorn","Aquarius","Pisces","Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius"];
+    let idx = month - 1;
+    if (day > cutoff[idx]) idx = (idx + 1) % 12;
+    return signs[idx];
+  }
 
-    const traits = {
-      "Aries": { sun: "突撃", moon: "勇敢", mercury: "迅速", mars: "突進" },
-      "Taurus": { sun: "防衛", moon: "堅実", mercury: "慎重", mars: "重圧" },
-      "Gemini": { sun: "撹乱", moon: "変幻", mercury: "多角", mars: "奇襲" },
-      "Cancer": { sun: "守護", moon: "忍耐", mercury: "慎密", mars: "波状" },
-      "Leo": { sun: "覇権", moon: "威風", mercury: "大胆", mars: "猛攻" },
-      "Virgo": { sun: "精密", moon: "分析", mercury: "周到", mars: "効率" },
-      "Libra": { sun: "均衡", moon: "協調", mercury: "策謀", mars: "連携" },
-      "Scorpio": { sun: "殲滅", moon: "執念", mercury: "深謀", mars: "毒牙" },
-      "Sagittarius": { sun: "拡大", moon: "楽観", mercury: "広域", mars: "疾風" },
-      "Capricorn": { sun: "制圧", moon: "忍耐", mercury: "長期", mars: "着実" },
-      "Aquarius": { sun: "革新", moon: "不屈", mercury: "奇策", mars: "電撃" },
-      "Pisces": { sun: "希望", moon: "適応", mercury: "直感", mars: "流動" }
+  const traits = {
+    "Aries": { sun: "突撃", moon: "勇敢", mercury: "迅速", mars: "突進" },
+    "Taurus": { sun: "防衛", moon: "堅実", mercury: "慎重", mars: "重圧" },
+    "Gemini": { sun: "撹乱", moon: "変幻", mercury: "多角", mars: "奇襲" },
+    "Cancer": { sun: "守護", moon: "忍耐", mercury: "慎密", mars: "波状" },
+    "Leo": { sun: "覇権", moon: "威風", mercury: "大胆", mars: "猛攻" },
+    "Virgo": { sun: "精密", moon: "分析", mercury: "周到", mars: "効率" },
+    "Libra": { sun: "均衡", moon: "協調", mercury: "策謀", mars: "連携" },
+    "Scorpio": { sun: "殲滅", moon: "執念", mercury: "深謀", mars: "毒牙" },
+    "Sagittarius": { sun: "拡大", moon: "楽観", mercury: "広域", mars: "疾風" },
+    "Capricorn": { sun: "制圧", moon: "忍耐", mercury: "長期", mars: "着実" },
+    "Aquarius": { sun: "革新", moon: "不屈", mercury: "奇策", mars: "電撃" },
+    "Pisces": { sun: "希望", moon: "適応", mercury: "直感", mars: "流動" }
+  };
+
+  const characters = [
+    { name: "楠本柊生帝國元帥", title: "皇任独裁官 / 第5公國最高司令官", sun: "Capricorn", moon: "Leo", mercury: "Sagittarius", mars: "Aries", unit: "第5公國最高司令部" },
+    { name: "立花馨大将", title: "統合幕僚総監 / 第4公國最高司令官", sun: "Aries", moon: "Cancer", mercury: "Taurus", mars: "Capricorn", unit: "第4公國最高司令部" },
+    { name: "定光寺輝信中将", title: "統帥参謀総長 / 第7公國最高司令官", sun: "Leo", moon: "Virgo", mercury: "Leo", mars: "Aquarius", unit: "第7公國最高司令部" },
+    { name: "鳴海建一少将", title: "宮廷近衛長官 / 第6公國最高司令官", sun: "Scorpio", moon: "Cancer", mercury: "Scorpio", mars: "Capricorn", unit: "第6公國最高司令部" },
+    { name: "天崎一桂少将", title: "最高司令官代行 / 第8公國最高司令官", sun: "Scorpio", moon: "Leo", mercury: "Sagittarius", mars: "Pisces", unit: "第8公國最高司令部" },
+    { name: "草薙護大佐", title: "第13公國最高司令官", sun: "Capricorn", moon: "Virgo", mercury: "Capricorn", mars: "Gemini", unit: "第13公國最高司令部" },
+    { name: "春木亮太朗大佐", title: "第11公國最高司令官", sun: "Aquarius", moon: "Taurus", mercury: "Aquarius", mars: "Taurus", unit: "第11公國最高司令部" },
+    { name: "星野和臣中佐", title: "第3公國最高司令官", sun: "Aries", moon: "Libra", mercury: "Aries", mars: "Aquarius", unit: "第3公國最高司令部" },
+    { name: "加納友緒中佐", title: "第1公國最高司令官", sun: "Capricorn", moon: "Libra", mercury: "Capricorn", mars: "Virgo", unit: "第1公國最高司令部" },
+    { name: "風間利之少佐", title: "第2公國最高司令官", sun: "Scorpio", moon: "Aries", mercury: "Scorpio", mars: "Scorpio", unit: "第2公國最高司令部" },
+    { name: "秋山祐少佐", title: "第9公國最高司令官", sun: "Gemini", moon: "Cancer", mercury: "Cancer", mars: "Taurus", unit: "第9公國最高司令部" },
+    { name: "長沢環大尉", title: "元帥府付副官", sun: "Aries", moon: "Capricorn", mercury: "Pisces", mars: "Leo", unit: "元帥府直轄" },
+    { name: "有馬竜ノ介大尉", title: "元帥府付副官", sun: "Virgo", moon: "Virgo", mercury: "Virgo", mars: "Taurus", unit: "元帥府直轄" },
+    { name: "武藤優作中尉", title: "元帥府付副官", sun: "Aquarius", moon: "Scorpio", mercury: "Aquarius", mars: "Aquarius", unit: "元帥府直轄" }
+  ];
+
+  function diagnose() {
+    const resultDiv = document.getElementById('result');
+    resultDiv.innerHTML = '';
+
+    const dateStr = document.getElementById('birthdate').value;
+    if (!dateStr) return alert("生年月日を入力してください");
+
+    const [year, month, day] = dateStr.split('-').map(Number);
+    const hour = parseInt(document.getElementById('hour').value) || 12;
+
+    const birthDate = new Date(year, month-1, day, hour);
+
+    const userSign = {
+      sun: getSign(month, day),
+      moon: getPlanetSign(birthDate, "Moon"),
+      mercury: getPlanetSign(birthDate, "Mercury"),
+      mars: getPlanetSign(birthDate, "Mars")
     };
 
-    const characters = [
-      { name: "楠本柊生帝國元帥", title: "皇任独裁官 / 第5公國最高司令官", sun: "Capricorn", moon: "Leo", mercury: "Sagittarius", mars: "Aries", unit: "第5公國最高司令部" },
-      { name: "立花馨大将", title: "統合幕僚総監 / 第4公國最高司令官", sun: "Aries", moon: "Cancer", mercury: "Taurus", mars: "Capricorn", unit: "第4公國最高司令部" },
-      { name: "定光寺輝信中将", title: "統帥参謀総長 / 第7公國最高司令官", sun: "Leo", moon: "Virgo", mercury: "Leo", mars: "Aquarius", unit: "第7公國最高司令部" },
-      { name: "鳴海建一少将", title: "宮廷近衛長官 / 第6公國最高司令官", sun: "Scorpio", moon: "Cancer", mercury: "Scorpio", mars: "Capricorn", unit: "第6公國最高司令部" },
-      { name: "天崎一桂少将", title: "最高司令官代行 / 第8公國最高司令官", sun: "Scorpio", moon: "Leo", mercury: "Sagittarius", mars: "Pisces", unit: "第8公國最高司令部" },
-      { name: "草薙護大佐", title: "第13公國最高司令官", sun: "Capricorn", moon: "Virgo", mercury: "Capricorn", mars: "Gemini", unit: "第13公國最高司令部" },
-      { name: "春木亮太朗大佐", title: "第11公國最高司令官", sun: "Aquarius", moon: "Taurus", mercury: "Aquarius", mars: "Taurus", unit: "第11公國最高司令部" },
-      { name: "星野和臣中佐", title: "第3公國最高司令官", sun: "Aries", moon: "Libra", mercury: "Aries", mars: "Aquarius", unit: "第3公國最高司令部" },
-      { name: "加納友緒中佐", title: "第1公國最高司令官", sun: "Capricorn", moon: "Libra", mercury: "Capricorn", mars: "Virgo", unit: "第1公國最高司令部" },
-      { name: "風間利之少佐", title: "第2公國最高司令官", sun: "Scorpio", moon: "Aries", mercury: "Scorpio", mars: "Scorpio", unit: "第2公國最高司令部" },
-      { name: "秋山祐少佐", title: "第9公國最高司令官", sun: "Gemini", moon: "Cancer", mercury: "Cancer", mars: "Taurus", unit: "第9公國最高司令部" },
-      { name: "長沢環大尉", title: "元帥府付副官", sun: "Aries", moon: "Capricorn", mercury: "Pisces", mars: "Leo", unit: "元帥府直轄" },
-      { name: "有馬竜ノ介大尉", title: "元帥府付副官", sun: "Virgo", moon: "Virgo", mercury: "Virgo", mars: "Taurus", unit: "元帥府直轄" },
-      { name: "武藤優作中尉", title: "元帥府付副官", sun: "Aquarius", moon: "Scorpio", mercury: "Aquarius", mars: "Aquarius", unit: "元帥府直轄" }
-    ];
+    const userTrait = {
+      sun: traits[userSign.sun].sun,
+      moon: traits[userSign.moon].moon,
+      mercury: traits[userSign.mercury].mercury,
+      mars: traits[userSign.mars].mars
+    };
 
-    function getCompatibility(a, b) {
-      if (a === b) return 92;
-      const good = {"Aries":["Leo","Sagittarius"],"Taurus":["Virgo","Capricorn"],"Gemini":["Libra","Aquarius"],"Cancer":["Scorpio","Pisces"],"Leo":["Aries","Sagittarius"],"Virgo":["Taurus","Capricorn"],"Libra":["Gemini","Aquarius"],"Scorpio":["Cancer","Pisces"],"Sagittarius":["Aries","Leo"],"Capricorn":["Taurus","Virgo"],"Aquarius":["Gemini","Libra"],"Pisces":["Cancer","Scorpio"]};
-      return good[a]?.includes(b) ? 78 : 52;
-    }
+    // 以降の結果表示部分
+    let html = `
+      <p class="result-title">── 配属下命書 ──</p>
+      <div class="traits-card">
+        <p class="field-label" style="text-align:center;margin-bottom:4px;">貴殿の戦略特性</p>
+        <div class="traits-grid">
+          <div class="trait-item"><span class="trait-key">戦闘目的</span><span class="trait-val">${userTrait.sun}</span></div>
+          <div class="trait-item"><span class="trait-key">精神力</span><span class="trait-val">${userTrait.moon}</span></div>
+          <div class="trait-item"><span class="trait-key">戦略思考</span><span class="trait-val">${userTrait.mercury}</span></div>
+          <div class="trait-item"><span class="trait-key">攻撃様式</span><span class="trait-val">${userTrait.mars}</span></div>
+        </div>
+      </div>
+      <p class="result-title">── 各リッターとの適合評定 ──</p>
+      <div class="commanders-list">
+    `;
 
-    window.diagnose = function() {
-      const resultDiv = document.getElementById('result');
-      resultDiv.innerHTML = '';
+    const results = characters.map(char => {
+      const purposeMatch = getCompatibility(userSign.sun, char.sun);
+      const mentalMatch = getCompatibility(userSign.moon, char.moon);
+      const strategyMatch = getCompatibility(userSign.mercury, char.mercury);
+      const attackMatch = getCompatibility(userSign.mars, char.mars);
+      const total = Math.floor((purposeMatch * 1.15 + mentalMatch * 1.1 + strategyMatch * 0.95 + attackMatch * 0.9) / 4);
+      return { char, total, purposeMatch, mentalMatch, strategyMatch, attackMatch };
+    });
 
-      const dateStr = document.getElementById('birthdate').value;
-      if (!dateStr) return alert("生年月日を入力してください");
+    results.sort((a, b) => b.total - a.total);
 
-      const [year, month, day] = dateStr.split('-').map(Number);
-      const hour = parseInt(document.getElementById('hour').value) || 12;
+    results.forEach(({ char, total, purposeMatch, mentalMatch, strategyMatch, attackMatch }) => {
+      const performance = total > 82 ? "この部隊の主力として、大規模作戦の中心的な役割を期待される。" :
+                         total > 73 ? "安定した戦力として貢献。重要な局面で大きく力を発揮するだろう。" :
+                         total > 63 ? "補佐・支援役として堅実に任務を遂行可能。" :
+                                      "適性は平均的。部隊の戦力強化に寄与する。";
 
-      const birthDate = new Date(year, month-1, day, hour);
+      html += `
+        <div class="cmd-card">
+          <div class="cmd-header">
+            <div>
+              <div class="cmd-name">${char.name}</div>
+              <div class="cmd-title">${char.title}</div>
+            </div>
+            <div style="text-align:center;">
+              <div class="compatibility-pct">${total}<span style="font-size:14px;">%</span></div>
+            </div>
+          </div>
+          <div class="stats-grid">
+            <div>戦闘目的 <span style="float:right;">${purposeMatch}%</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${purposeMatch}%"></div></div>
+            <div>精神力 <span style="float:right;">${mentalMatch}%</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${mentalMatch}%"></div></div>
+            <div>戦略思考 <span style="float:right;">${strategyMatch}%</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${strategyMatch}%"></div></div>
+            <div>攻撃様式 <span style="float:right;">${attackMatch}%</span></div>
+            <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${attackMatch}%"></div></div>
+          </div>
+          <div class="cmd-performance">${performance}</div>
+          <div style="margin-top:12px; color:var(--gold-dim); font-size:13px;">
+            配属推奨：<strong>${char.unit}</strong>
+          </div>
+        </div>
+      `;
+    });
 
-      const userSign = {
-        sun: getSign(month, day),
-        moon: getPlanetSign(birthDate, "Moon"),
-        mercury: getPlanetSign(birthDate, "Mercury"),
-        mars: getPlanetSign(birthDate, "Mars")
-      };
+    html += `</div>`;
+    resultDiv.innerHTML = html;
+  }
 
-      const userTrait = {
-        sun: traits[userSign.sun].sun,
-        moon: traits[userSign.moon].moon,
-        mercury: traits[userSign.mercury].mercury,
-        mars: traits[userSign.mars].mars
-      };
-
-      let html = `
-        <p class="result-title">── 配属下命書  ──</p>
-        <div class="traits-card">
+  function getCompatibility(a, b) {
+    if (a === b) return 92;
+    const good = {"Aries":["Leo","Sagittarius"],"Taurus":["Virgo","Capricorn"],"Gemini":["Libra","Aquarius"],"Cancer":["Scorpio","Pisces"],"Leo":["Aries","Sagittarius"],"Virgo":["Taurus","Capricorn"],"Libra":["Gemini","Aquarius"],"Scorpio":["Cancer","Pisces"],"Sagittarius":["Aries","Leo"],"Capricorn":["Taurus","Virgo"],"Aquarius":["Gemini","Libra"],"Pisces":["Cancer","Scorpio"]};
+    return good[a]?.includes(b) ? 78 : 52;
+  }
+</script>
+</body>
+</html>
