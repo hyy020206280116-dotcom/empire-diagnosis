@@ -7,6 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&family=Cinzel:wght@400;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
   
+  <script src="https://cdn.jsdelivr.net/npm/astronomy-engine@2.1.19/astronomy.browser.min.js"></script>
+
   <style>
     :root {
       --gold: #c9a84c;
@@ -29,24 +31,22 @@
       position: relative;
     }
 
-    body::before {
+    body::before, body::after {
       content: '';
       position: fixed;
       inset: 0;
-      background-image:
-        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(201,168,76,0.015) 60px, rgba(201,168,76,0.015) 61px),
-        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,168,76,0.015) 60px, rgba(201,168,76,0.015) 61px);
       pointer-events: none;
       z-index: 0;
     }
 
+    body::before {
+      background-image:
+        repeating-linear-gradient(0deg, transparent, transparent 60px, rgba(201,168,76,0.015) 60px, rgba(201,168,76,0.015) 61px),
+        repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(201,168,76,0.015) 60px, rgba(201,168,76,0.015) 61px);
+    }
+
     body::after {
-      content: '';
-      position: fixed;
-      inset: 0;
       background: radial-gradient(ellipse at center, transparent 40%, rgba(10,8,5,0.75) 100%);
-      pointer-events: none;
-      z-index: 0;
     }
 
     .page-wrapper {
@@ -330,21 +330,21 @@
 <script>
   const signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
 
-  function getSunSign(month, day) {
-    const cutoff = [19,18,20,19,20,20,22,22,22,22,21,21];
-    const sunSigns = ["Capricorn","Aquarius","Pisces","Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius"];
-    let idx = month - 1;
-    if (day > cutoff[idx]) idx = (idx + 1) % 12;
-    return sunSigns[idx];
+  function getSignFromLongitude(lon) {
+    const idx = Math.floor(lon / 30) % 12;
+    return signs[idx];
   }
 
-  function getDatabaseSign(year, month, day, hour, planet) {
-    const seed = (year * 10000) + (month * 100) + day + (hour * 7);
-    let hash = 0;
-    const multipliers = { "Moon": 0.13431, "Mercury": 0.04132, "Mars": 0.00531 };
-    hash = Math.abs(Math.sin(seed * multipliers[planet]) * 1000);
-    const index = Math.floor(hash) % 12;
-    return signs[index];
+  function calculateRealSign(dateObj, planet) {
+    const astroDate = Astronomy.MakeTime(dateObj);
+    let body;
+    if (planet === "Sun") body = Astronomy.Body.Sun;
+    else if (planet === "Moon") body = Astronomy.Body.Moon;
+    else if (planet === "Mercury") body = Astronomy.Body.Mercury;
+    else if (planet === "Mars") body = Astronomy.Body.Mars;
+
+    const pos = Astronomy.EclipticLongitude(body, astroDate);
+    return getSignFromLongitude(pos);
   }
 
   const traits = {
@@ -362,7 +362,7 @@
     "Pisces": { sun: "希望", moon: "適応", mercury: "直感", mars: "流動" }
   };
 
-  const characters = [
+  const characters = [ /* ここは元のまま */ 
     { name: "楠本柊生帝國元帥", title: "皇任独裁官 / 第5公國最高司令官", sun: "Capricorn", moon: "Leo", mercury: "Sagittarius", mars: "Aries", unit: "第5公國最高司令部" },
     { name: "立花馨大将", title: "統合幕僚総監 / 第4公國最高司令官", sun: "Aries", moon: "Cancer", mercury: "Taurus", mars: "Capricorn", unit: "第4公國最高司令部" },
     { name: "定光寺輝信中将", title: "統帥参謀総長 / 第7公國最高司令官", sun: "Leo", moon: "Virgo", mercury: "Leo", mars: "Aquarius", unit: "第7公國最高司令部" },
@@ -379,10 +379,28 @@
     { name: "武藤優作中尉", title: "元帥府付副官", sun: "Aquarius", moon: "Scorpio", mercury: "Aquarius", mars: "Aquarius", unit: "元帥府直轄" }
   ];
 
+  // 相性計算（改善版）
   function getCompatibility(a, b) {
-    if (a === b) return 92;
-    const good = {"Aries":["Leo","Sagittarius"],"Taurus":["Virgo","Capricorn"],"Gemini":["Libra","Aquarius"],"Cancer":["Scorpio","Pisces"],"Leo":["Aries","Sagittarius"],"Virgo":["Taurus","Capricorn"],"Libra":["Gemini","Aquarius"],"Scorpio":["Cancer","Pisces"],"Sagittarius":["Aries","Leo"],"Capricorn":["Taurus","Virgo"],"Aquarius":["Gemini","Libra"],"Pisces":["Cancer","Scorpio"]};
-    return good[a]?.includes(b) ? 78 : 52;
+    if (a === b) return 94;
+
+    const elements = {
+      "Fire": ["Aries","Leo","Sagittarius"],
+      "Earth": ["Taurus","Virgo","Capricorn"],
+      "Air": ["Gemini","Libra","Aquarius"],
+      "Water": ["Cancer","Scorpio","Pisces"]
+    };
+
+    const getElement = sign => Object.keys(elements).find(el => elements[el].includes(sign));
+    const elemA = getElement(a);
+    const elemB = getElement(b);
+
+    if (elemA === elemB) return 86;
+    if ((elemA === "Fire" && elemB === "Air") || (elemA === "Air" && elemB === "Fire") ||
+        (elemA === "Earth" && elemB === "Water") || (elemA === "Water" && elemB === "Earth")) return 78;
+    if ((elemA === "Fire" && elemB === "Water") || (elemA === "Water" && elemB === "Fire") ||
+        (elemA === "Earth" && elemB === "Air") || (elemA === "Air" && elemB === "Earth")) return 51;
+
+    return 64;
   }
 
   function runDiagnosis() {
@@ -390,10 +408,14 @@
     const resultDiv = document.getElementById('result');
     
     btn.disabled = true;
-    resultDiv.innerHTML = '<p style="text-align:center; padding:40px; color:var(--gold-dim);">星辰を読み解いています...</p>';
+    resultDiv.innerHTML = '<p style="text-align:center; padding:40px; color:var(--gold-dim);">天体物理学に基づく星辰を解析中...</p>';
 
     setTimeout(() => {  
       try {
+        if (typeof Astronomy === 'undefined') {
+          throw new Error("天体計算ライブラリの読み込みに失敗しました。通信環境を確認してください。");
+        }
+
         const dateStr = document.getElementById('birthdate').value;
         if (!dateStr) throw new Error("生年月日を入力してください");
 
@@ -403,12 +425,13 @@
         }
 
         const [year, month, day] = dateStr.split('-').map(Number);
+        const targetDate = new Date(year, month - 1, day, hourVal, 0, 0);
 
         const userSign = {
-          sun: getSunSign(month, day),
-          moon: getDatabaseSign(year, month, day, hourVal, "Moon"),
-          mercury: getDatabaseSign(year, month, day, hourVal, "Mercury"),
-          mars: getDatabaseSign(year, month, day, hourVal, "Mars")
+          sun: calculateRealSign(targetDate, "Sun"),
+          moon: calculateRealSign(targetDate, "Moon"),
+          mercury: calculateRealSign(targetDate, "Mercury"),
+          mars: calculateRealSign(targetDate, "Mars")
         };
 
         const userTrait = {
@@ -421,12 +444,12 @@
         let html = `
           <p class="result-title">── 配属下命書 ──</p>
           <div class="traits-card">
-            <p class="field-label" style="text-align:center;margin-bottom:4px;">貴殿の戦略特性</p>
+            <p class="field-label" style="text-align:center;margin-bottom:4px;">貴殿の戦略特性（本格星辰盤より算出）</p>
             <div class="traits-grid">
-              <div class="trait-item"><span class="trait-key">戦闘目的</span><span class="trait-val">${userTrait.sun}</span></div>
-              <div class="trait-item"><span class="trait-key">精神力</span><span class="trait-val">${userTrait.moon}</span></div>
-              <div class="trait-item"><span class="trait-key">戦略思考</span><span class="trait-val">${userTrait.mercury}</span></div>
-              <div class="trait-item"><span class="trait-key">攻撃様式</span><span class="trait-val">${userTrait.mars}</span></div>
+              <div class="trait-item"><span class="trait-key">戦闘目的 (太陽:${userSign.sun})</span><span class="trait-val">${userTrait.sun}</span></div>
+              <div class="trait-item"><span class="trait-key">精神力 (月:${userSign.moon})</span><span class="trait-val">${userTrait.moon}</span></div>
+              <div class="trait-item"><span class="trait-key">戦略思考 (水星:${userSign.mercury})</span><span class="trait-val">${userTrait.mercury}</span></div>
+              <div class="trait-item"><span class="trait-key">攻撃様式 (火星:${userSign.mars})</span><span class="trait-val">${userTrait.mars}</span></div>
             </div>
           </div>
           <p class="result-title">── 各リッターとの適合評定 ──</p>
@@ -438,16 +461,16 @@
           const mentalMatch = getCompatibility(userSign.moon, char.moon);
           const strategyMatch = getCompatibility(userSign.mercury, char.mercury);
           const attackMatch = getCompatibility(userSign.mars, char.mars);
-          const total = Math.floor((purposeMatch * 1.15 + mentalMatch * 1.1 + strategyMatch * 0.95 + attackMatch * 0.9) / 4);
+          const total = Math.floor((purposeMatch * 1.2 + mentalMatch * 1.15 + strategyMatch * 0.95 + attackMatch * 0.9) / 4);
           return { char, total, purposeMatch, mentalMatch, strategyMatch, attackMatch };
         });
 
         results.sort((a, b) => b.total - a.total);
 
         results.forEach(({ char, total, purposeMatch, mentalMatch, strategyMatch, attackMatch }) => {
-          const performance = total > 82 ? "この部隊の主力として、大規模作戦の中心的な役割を期待される。" :
-                             total > 73 ? "安定した戦力として貢献。重要な局面で大きく力を発揮するだろう。" :
-                             total > 63 ? "補佐・支援役として堅実に任務を遂行可能。" :
+          const performance = total > 84 ? "この部隊の主力として、大規模作戦の中心的な役割を期待される。" :
+                             total > 76 ? "安定した戦力として貢献。重要な局面で大きく力を発揮するだろう。" :
+                             total > 67 ? "補佐・支援役として堅実に任務を遂行可能。" :
                                           "適性は平均的。部隊の戦力強化に寄与する。";
 
           html += `
@@ -458,43 +481,4 @@
                   <div class="cmd-title">${char.title}</div>
                 </div>
                 <div style="text-align:center;">
-                  <div class="compatibility-pct">${total}<span style="font-size:14px;">%</span></div>
-                </div>
-              </div>
-              <div class="stats-grid">
-                <div>戦闘目的 <span style="float:right;">${purposeMatch}%</span></div>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${purposeMatch}%"></div></div>
-                <div>精神力 <span style="float:right;">${mentalMatch}%</span></div>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${mentalMatch}%"></div></div>
-                <div>戦略思考 <span style="float:right;">${strategyMatch}%</span></div>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${strategyMatch}%"></div></div>
-                <div>攻撃様式 <span style="float:right;">${attackMatch}%</span></div>
-                <div class="stat-bar-bg"><div class="stat-bar-fill" style="width:${attackMatch}%"></div></div>
-              </div>
-              <div class="cmd-performance">${performance}</div>
-              <div style="margin-top:12px; color:var(--gold-dim); font-size:13px;">
-                配属推奨：<strong>${char.unit}</strong>
-              </div>
-            </div>
-          `;
-        });
-
-        html += `</div>`;
-
-        resultDiv.innerHTML = html + `
-          <button class="reset-btn" onclick="location.reload()">もう一度診断する</button>
-        `;
-
-      } catch (e) {
-        resultDiv.innerHTML = `<p style="color:#ff6b6b; text-align:center; padding:30px;">${e.message}</p>`;
-      } finally {
-        btn.disabled = false;
-      }
-    }, 420);
-  }
-
-  // 二重発火を防ぎ、確実に入力とクリックを受け付けるようにイベントを設定
-  document.getElementById('diagnoseBtn').addEventListener('click', runDiagnosis);
-</script>
-</body>
-</html>
+                  <div class="
