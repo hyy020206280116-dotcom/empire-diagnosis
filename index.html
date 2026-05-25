@@ -57,12 +57,7 @@
       padding: 40px 24px 80px;
     }
 
-    header {
-      text-align: center;
-      padding: 48px 24px 40px;
-      position: relative;
-    }
-
+    header { text-align: center; padding: 48px 24px 40px; }
     h1 {
       font-family: 'Cinzel Decorative', serif;
       font-size: clamp(18px, 4.5vw, 28px);
@@ -74,239 +69,68 @@
     }
 
     .ornament-line {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 12px;
-      margin: 12px 0;
-      color: var(--gold-dim);
-      font-size: 20px;
-      letter-spacing: 4px;
+      display: flex; align-items: center; justify-content: center; gap: 12px;
+      margin: 12px 0; color: var(--gold-dim); font-size: 20px; letter-spacing: 4px;
     }
 
     .subtitle {
       font-family: 'Cinzel', serif;
-      font-size: 12px;
-      letter-spacing: 0.35em;
-      color: var(--gold-dim);
-      text-transform: uppercase;
-      margin-top: 10px;
+      font-size: 12px; letter-spacing: 0.35em; color: var(--gold-dim);
+      text-transform: uppercase; margin-top: 10px;
     }
 
-    .frame-border {
-      border: 1px solid var(--gold-dim);
-      position: relative;
-      padding: 32px;
-      margin: 32px 0;
+    .frame-border, .input-panel, .traits-card, .cmd-card {
+      border: 1px solid var(--gold-dim); position: relative; padding: 28px; margin: 20px 0;
     }
 
-    .frame-border::before,
-    .frame-border::after {
-      content: '◈';
-      position: absolute;
-      color: var(--gold);
-      font-size: 18px;
-      top: -12px;
-    }
-    .frame-border::before { left: 20px; }
-    .frame-border::after  { right: 20px; }
+    .frame-body-text { font-family: 'EB Garamond', serif; font-size: 16px; line-height: 1.9; color: var(--cream-dim); text-align: center; font-style: italic; }
 
-    .frame-body-text {
-      font-family: 'EB Garamond', serif;
-      font-size: 16px;
-      line-height: 1.9;
-      color: var(--cream-dim);
-      text-align: center;
-      font-style: italic;
-    }
+    .input-panel { background: linear-gradient(135deg, rgba(30,22,14,0.95), rgba(20,14,8,0.98)); border: 1px solid rgba(201,168,76,0.25); border-radius: 2px; padding: 36px; }
 
-    .input-panel {
-      background: linear-gradient(135deg, rgba(30,22,14,0.95), rgba(20,14,8,0.98));
-      border: 1px solid rgba(201,168,76,0.25);
-      border-radius: 2px;
-      padding: 36px;
-      margin: 28px 0;
-    }
+    .field-group { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-top: 8px; }
+    @media (max-width: 520px) { .field-group { grid-template-columns: 1fr; } }
 
-    .field-group {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      margin-top: 8px;
-    }
-
-    @media (max-width: 520px) {
-      .field-group { grid-template-columns: 1fr; }
-    }
-
-    .field-label {
-      font-family: 'Cinzel', serif;
-      font-size: 10px;
-      letter-spacing: 0.3em;
-      color: var(--gold-dim);
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 8px;
-    }
+    .field-label { font-family: 'Cinzel', serif; font-size: 10px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; display: block; margin-bottom: 8px; }
 
     input[type="date"], input[type="number"] {
-      width: 100%;
-      padding: 12px 16px;
-      background: rgba(10,8,5,0.8);
-      border: 1px solid rgba(201,168,76,0.3);
-      color: var(--cream);
-      font-family: 'EB Garamond', serif;
-      font-size: 16px;
-      border-radius: 1px;
-      outline: none;
-    }
-
-    input:focus {
-      border-color: var(--gold);
-      box-shadow: 0 0 16px rgba(201,168,76,0.15);
+      width: 100%; padding: 12px 16px; background: rgba(10,8,5,0.8); border: 1px solid rgba(201,168,76,0.3);
+      color: var(--cream); font-family: 'EB Garamond', serif; font-size: 16px; border-radius: 1px;
     }
 
     .btn-diagnose {
-      display: block;
-      width: 100%;
-      margin-top: 28px;
-      padding: 16px;
+      display: block; width: 100%; margin-top: 28px; padding: 16px;
       background: linear-gradient(135deg, #7a5c1e, #c9a84c, #7a5c1e);
-      background-size: 200% 100%;
-      color: var(--ink);
-      font-family: 'Cinzel', serif;
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.4em;
-      text-transform: uppercase;
-      border: none;
-      cursor: pointer;
-    }
-
-    .btn-diagnose:hover {
-      background-position: 100% 0;
-      box-shadow: 0 0 30px rgba(201,168,76,0.4);
+      color: var(--ink); font-family: 'Cinzel', serif; font-size: 13px; font-weight: 700;
+      letter-spacing: 0.4em; text-transform: uppercase; border: none; cursor: pointer;
     }
 
     #result { margin-top: 48px; }
 
-    .result-title {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 16px;
-      color: var(--gold-light);
-      letter-spacing: 0.2em;
-      text-align: center;
-      margin-bottom: 24px;
-    }
+    .result-title { font-family: 'Cinzel Decorative', serif; font-size: 16px; color: var(--gold-light); letter-spacing: 0.2em; text-align: center; margin-bottom: 24px; }
 
-    .traits-card {
-      background: linear-gradient(135deg, rgba(92,26,26,0.25), rgba(13,24,41,0.4));
-      border: 1px solid rgba(201,168,76,0.35);
-      padding: 28px;
-      margin-bottom: 36px;
-    }
-
-    .traits-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 16px;
-      margin-top: 16px;
-    }
-
-    .trait-item {
-      padding: 12px 16px;
-      background: rgba(0,0,0,0.3);
-      border-left: 2px solid var(--gold-dim);
-    }
-
-    .trait-key {
-      font-family: 'Cinzel', serif;
-      font-size: 9px;
-      letter-spacing: 0.3em;
-      color: var(--gold-dim);
-      text-transform: uppercase;
-      display: block;
-      margin-bottom: 4px;
-    }
-
-    .trait-val {
-      font-size: 18px;
-      color: var(--cream);
-      font-weight: 500;
-    }
+    .traits-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-top: 16px; }
+    .trait-item { padding: 12px 16px; background: rgba(0,0,0,0.3); border-left: 2px solid var(--gold-dim); }
+    .trait-key { font-family: 'Cinzel', serif; font-size: 9px; letter-spacing: 0.3em; color: var(--gold-dim); text-transform: uppercase; display: block; margin-bottom: 4px; }
+    .trait-val { font-size: 18px; color: var(--cream); font-weight: 500; }
 
     .commanders-list { display: flex; flex-direction: column; gap: 24px; }
-
     .cmd-card {
       background: linear-gradient(160deg, rgba(26,20,16,0.97), rgba(18,14,10,0.99));
-      border: 1px solid rgba(201,168,76,0.18);
-      padding: 28px;
-      position: relative;
-      transition: all 0.4s;
+      border: 1px solid rgba(201,168,76,0.18); padding: 28px; transition: all 0.4s;
     }
-
-    .cmd-card:hover {
-      border-color: rgba(201,168,76,0.5);
-      box-shadow: 0 8px 40px rgba(0,0,0,0.6);
-    }
-
-    .cmd-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 16px;
-      margin-bottom: 16px;
-    }
-
-    .cmd-name {
-      font-family: 'Cinzel', serif;
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--gold-light);
-    }
-
-    .cmd-title {
-      font-size: 12px;
-      color: var(--cream-dim);
-      font-style: italic;
-    }
+    .cmd-header { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; margin-bottom: 16px; }
+    .cmd-name { font-family: 'Cinzel', serif; font-size: 16px; font-weight: 700; color: var(--gold-light); }
+    .cmd-title { font-size: 12px; color: var(--cream-dim); font-style: italic; }
 
     .compatibility-pct {
-      font-family: 'Cinzel Decorative', serif;
-      font-size: 28px;
-      font-weight: 700;
+      font-family: 'Cinzel Decorative', serif; font-size: 28px; font-weight: 700;
       background: linear-gradient(135deg, var(--gold-dim), var(--gold-light));
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
     }
 
-    .stats-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px 20px;
-      margin: 16px 0;
-    }
-
-    .stat-bar-bg {
-      height: 3px;
-      background: rgba(255,255,255,0.06);
-    }
-
-    .stat-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--gold-dim), var(--gold-light));
-    }
-
-    .cmd-performance {
-      margin-top: 16px;
-      padding: 14px 16px;
-      background: rgba(201,168,76,0.04);
-      border: 1px solid rgba(201,168,76,0.1);
-      font-size: 14px;
-      font-style: italic;
-      color: var(--cream-dim);
-      line-height: 1.7;
-    }
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px 20px; margin: 16px 0; }
+    .stat-bar-bg { height: 3px; background: rgba(255,255,255,0.06); }
+    .stat-bar-fill { height: 100%; background: linear-gradient(90deg, var(--gold-dim), var(--gold-light)); }
   </style>
 </head>
 <body>
@@ -321,7 +145,7 @@
   <div class="frame-border">
     <p class="frame-body-text">
       生年月日と出生時間より、<br>星辰の導きを解読し<br>
-      貴殿に最もふさわしき帝國の部隊へと<br>配属を下命する
+      汝に最もふさわしき帝國の部隊へと<br>配属を下命する
     </p>
   </div>
 
@@ -361,14 +185,17 @@
     return signs[Math.floor(moonDegrees / 30)];
   }
 
+  // 修正後の水星計算ロジック
   function getMercurySign(month, day) {
-    const offset = Math.floor(Math.sin(day * 0.3) * 14 + 8);
+    const offset = Math.floor(Math.sin(day * 0.28) * 16 + 10);
     return getSign(month, day + offset);
   }
 
+  // 修正後の火星計算ロジック
   function getMarsSign(month, day) {
-    const offset = Math.floor((month * 6) + (day * 0.4));
-    return getSign(month, day + offset - 12);
+    const marsBase = (month * 57) + (day * 1.8);
+    const adjustedDay = day + Math.floor(marsBase % 365 / 30.4) - 8;
+    return getSign(month, adjustedDay);
   }
 
   function getCompatibility(a, b) {
@@ -377,14 +204,14 @@
     return good[a]?.includes(b) ? 78 : 52;
   }
 
-  const characters = [
+  const characters = [ 
     { name: "楠本柊生帝國元帥", title: "皇任独裁官 / 第5公國最高司令官", sun: "Capricorn", moon: "Leo", mercury: "Sagittarius", mars: "Aries", unit: "第5公國最高司令部" },
     { name: "立花馨大将", title: "統合幕僚総監 / 第4公國最高司令官", sun: "Aries", moon: "Cancer", mercury: "Taurus", mars: "Capricorn", unit: "第4公國最高司令部" },
     { name: "定光寺輝信中将", title: "統帥参謀総長 / 第7公國最高司令官", sun: "Leo", moon: "Virgo", mercury: "Leo", mars: "Aquarius", unit: "第7公國最高司令部" },
     { name: "鳴海建一少将", title: "宮廷近衛長官 / 第6公國最高司令官", sun: "Scorpio", moon: "Cancer", mercury: "Scorpio", mars: "Capricorn", unit: "第6公國最高司令部" },
     { name: "天崎一桂少将", title: "最高司令官代行 / 第8公國最高司令官", sun: "Scorpio", moon: "Leo", mercury: "Sagittarius", mars: "Pisces", unit: "第8公國最高司令部" },
     { name: "草薙護大佐", title: "第13公國最高司令官", sun: "Capricorn", moon: "Virgo", mercury: "Capricorn", mars: "Gemini", unit: "第13公國最高司令部" },
-    { name: "春木亮太朗大佐", title: "第11公國最高司令官", sun: "Aquarius", moon: "Taurus", mercury: "Aquarius", mars: "Taurus", unit: "第11公國最高司令部" },
+    { name: "春木亮太朗大佐", title: "第11公國最高司令官", sun: "Aquarius", moon: "Taurus", mercury: "Aquarius", mars: "Taurus", unit: "第11公國最高司令官" },
     { name: "星野和臣中佐", title: "第3公國最高司令官", sun: "Aries", moon: "Libra", mercury: "Aries", mars: "Aquarius", unit: "第3公國最高司令部" },
     { name: "加納友緒中佐", title: "第1公國最高司令官", sun: "Capricorn", moon: "Libra", mercury: "Capricorn", mars: "Virgo", unit: "第1公國最高司令部" },
     { name: "風間利之少佐", title: "第2公國最高司令官", sun: "Scorpio", moon: "Aries", mercury: "Scorpio", mars: "Scorpio", unit: "第2公國最高司令部" },
@@ -395,7 +222,7 @@
   ];
 
   const traits = {
-    "Aries": { sun: "突撃", moon: "勇敢", mercury: "迅速", mars: "突進" },
+    ""Aries": { sun: "突撃", moon: "勇敢", mercury: "迅速", mars: "突進" },
     "Taurus": { sun: "防衛", moon: "堅実", mercury: "慎重", mars: "重圧" },
     "Gemini": { sun: "撹乱", moon: "変幻", mercury: "多角", mars: "奇襲" },
     "Cancer": { sun: "守護", moon: "忍耐", mercury: "慎密", mars: "波状" },
@@ -407,11 +234,9 @@
     "Capricorn": { sun: "制圧", moon: "忍耐", mercury: "長期", mars: "着実" },
     "Aquarius": { sun: "革新", moon: "不屈", mercury: "奇策", mars: "電撃" },
     "Pisces": { sun: "希望", moon: "適応", mercury: "直感", mars: "流動" }
-  };
-
   function diagnose() {
     const resultDiv = document.getElementById('result');
-    resultDiv.innerHTML = ''; // 重複防止
+    resultDiv.innerHTML = '';
 
     const dateStr = document.getElementById('birthdate').value;
     if (!dateStr) return alert("生年月日を入力してください");
@@ -500,3 +325,4 @@
 </script>
 </body>
 </html>
+
