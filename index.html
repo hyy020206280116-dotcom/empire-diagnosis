@@ -385,7 +385,7 @@
     return good[a]?.includes(b) ? 78 : 52;
   }
 
-  function diagnose() {
+  function runDiagnosis() {
     const btn = document.getElementById('diagnoseBtn');
     const resultDiv = document.getElementById('result');
     
@@ -418,7 +418,6 @@
           mars: traits[userSign.mars].mars
         };
 
-        // 元のHTML生成・評定ロジックをここに完全統合
         let html = `
           <p class="result-title">── 配属下命書 ──</p>
           <div class="traits-card">
@@ -494,7 +493,8 @@
     }, 420);
   }
 
-  document.getElementById('diagnoseBtn').addEventListener('click', diagnose);
+  // 二重発火を防ぎ、確実に入力とクリックを受け付けるようにイベントを設定
+  document.getElementById('diagnoseBtn').addEventListener('click', runDiagnosis);
 </script>
 </body>
 </html>
