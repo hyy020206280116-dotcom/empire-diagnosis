@@ -418,4 +418,360 @@ function runDiagnosis() {
 document.getElementById("diagnoseBtn").addEventListener("click", runDiagnosis);
 </script>
 </body>
+</html><div class="page-wrapper">
+
+  <header>
+    <h1>第14帝國<br>戦略部隊配属診断<br>非公式</h1>
+    <div class="ornament">✦ ✦ ✦</div>
+    <div class="subtitle">ReichsRitter</div>
+  </header>
+
+  <div class="intro-box">
+    <p>生年月日と出生時間より<br>星辰の導きを解析し<br>汝に最も適した帝國部隊への<br>配属を下命する</p>
+  </div>
+
+  <div class="panel">
+    <div class="field-group">
+      <div>
+        <label class="field-label">生年月日</label>
+        <input type="date" id="birthdate">
+      </div>
+      <div>
+        <label class="field-label">出生時間（0〜23）</label>
+        <input type="number" id="hour" min="0" max="23" value="12">
+      </div>
+    </div>
+    <button class="btn" id="diagnoseBtn">── 診断を開始せよ ──</button>
+  </div>
+
+  <div id="result"></div>
+
+</div>
+<script>
+
+const signs = ["Aries","Taurus","Gemini","Cancer","Leo","Virgo","Libra","Scorpio","Sagittarius","Capricorn","Aquarius","Pisces"];
+
+const traits = {
+  "Aries":       { sun:"突撃", moon:"勇敢", mercury:"迅速", mars:"突進" },
+  "Taurus":      { sun:"防衛", moon:"堅実", mercury:"慎重", mars:"重圧" },
+  "Gemini":      { sun:"撹乱", moon:"変幻", mercury:"多角", mars:"奇襲" },
+  "Cancer":      { sun:"守護", moon:"忍耐", mercury:"精密", mars:"波状" },
+  "Leo":         { sun:"覇権", moon:"威風", mercury:"大胆", mars:"猛攻" },
+  "Virgo":       { sun:"精密", moon:"分析", mercury:"周到", mars:"効率" },
+  "Libra":       { sun:"均衡", moon:"協調", mercury:"策謀", mars:"連携" },
+  "Scorpio":     { sun:"殲滅", moon:"執念", mercury:"深謀", mars:"毒牙" },
+  "Sagittarius": { sun:"拡大", moon:"楽観", mercury:"広域", mars:"疾風" },
+  "Capricorn":   { sun:"制圧", moon:"忍耐", mercury:"長期", mars:"着実" },
+  "Aquarius":    { sun:"革新", moon:"不屈", mercury:"奇策", mars:"電撃" },
+  "Pisces":      { sun:"希望", moon:"適応", mercury:"直感", mars:"流動" }
+};
+
+const interpretation = {
+  sun: {
+    Aries:"前進意欲が強く、停滞を嫌う。", Taurus:"安定した持久力を持ち、長期維持能力が高い。",
+    Gemini:"状況変化への適応が速い。", Cancer:"保護対象への献身性が高い。",
+    Leo:"指揮権掌握への意識が強い。", Virgo:"分析と修正能力に優れる。",
+    Libra:"全体均衡を重視する。", Scorpio:"極端な集中力を持つ。",
+    Sagittarius:"拡大型思考傾向。", Capricorn:"統制と結果を重視する。",
+    Aquarius:"独自理論による改革志向。", Pisces:"状況同調能力が高い。"
+  },
+  moon: {
+    Aries:"精神反応速度が速い。", Taurus:"精神安定性が高い。",
+    Gemini:"感情の揺らぎを機動力に転換する。", Cancer:"仲間内での調和と一体感を求める。",
+    Leo:"誇り高く揺るぎない確固たる精神力を持つ。", Virgo:"環境を緻密に把握しようとする防衛本能。",
+    Libra:"客観的かつスマートに均整を保つ。", Scorpio:"感情集中傾向が強い。",
+    Sagittarius:"束縛を嫌い常に理想を追い求める。", Capricorn:"感情抑制能力が高い。",
+    Aquarius:"理知的で一歩引いた客観性を維持する。", Pisces:"包容力があり周囲の波動に同調しやすい。"
+  }
+};
+
+// 天体間の特殊干渉パターン（アスペクト）
+const specialPatterns = {
+  "Moon-Pluto-Conjunction": { label:"月冥王星・合",   bonus:"精神力+20",  text:"対象への執着力が極端に強い。心理的耐久性能が高い。" },
+  "Sun-Mars-Trine":         { label:"太陽火星・三分",  bonus:"行動力+18",  text:"行動決断と実行速度が非常に速い。" },
+  "Mercury-Saturn-Trine":   { label:"水星土星・三分",  bonus:"分析力+16",  text:"戦略構築能力に優れる。" },
+  "Moon-Saturn-Square":     { label:"月土星・矩",      bonus:"精神力+8",   text:"感情抑制傾向。慢性的緊張を抱えやすい。" },
+  "Mars-Pluto-Conjunction": { label:"火星冥王星・合",  bonus:"攻撃性+22",  text:"極端な突破力を持つ。" }
+};
+
+const nations = [
+  { name:"第1公國",  commander:"加納友緒中佐",    animal:"サソリ",   specialty:"砂時計",         industry:"墓掘り",       climate:"砂漠",    themes:["孤独","古代","執念","遺跡","死"],       suitable:["Scorpio","Capricorn","Virgo"],       memo:"国土全域が砂漠であり、人が住むのに適さない不毛の大地。古代遺跡が点在する帝國文明発祥の地として有名である。しかし、未だに人口は0人である。" },
+  { name:"第2公國",  commander:"風間利之少佐",    animal:"すずめ",   specialty:"筆",             industry:"農業",         climate:"農村地帯", themes:["農業","素朴","安定","戦乱","辺境"],    suitable:["Taurus","Virgo","Cancer"],           memo:"帝都に隣接しているためか戦乱の地となることが多く、全体的な国力は低いが国情の安定により生産量は飛躍的に伸びている。でもすごい田舎らしい。" },
+  { name:"第5公國",  commander:"楠本柊生帝國元帥", animal:"ペンギン", specialty:"かき氷",         industry:"軍需産業",     climate:"極寒",    themes:["統制","軍事","工業","忍耐","合理性"],  suitable:["Capricorn","Aquarius","Aries"],      memo:"年中氷に閉ざされた極寒の土地であり、作物の生育には適さない。反面、技術力は高く、近年は軍需産業を伴う重化学工業で帝國最大の推進を遂げた。帝國の軍需産業の三分の一が集中する要の場所。" },
+  { name:"第6公國",  commander:"椎名哲也中尉",    animal:"不明",     specialty:"不明",           industry:"不明",         climate:"不明",    themes:["機密","空白","未確認"],                suitable:["Scorpio","Aquarius","Pisces"],       memo:"詳細不明。帝國内でも情報が秘匿されている公國と思われる。" },
+  { name:"第7公國",  commander:"定光寺輝信中将",  animal:"キリン",   specialty:"熊の木彫り",     industry:"福祉・教育",   climate:"温暖",    themes:["教育","秩序","伝統","工業","知性"],    suitable:["Leo","Virgo","Libra"],              memo:"温暖な気候で帝都に程良く近い。鉱産資源も豊富で建国以来、帝國工業の主幹を担っている。伝統的な帝國料理の発祥地としても有名。" },
+  { name:"第8公國",  commander:"天崎一桂少将",    animal:"グッピー", specialty:"パイナップル",   industry:"観光業",       climate:"熱帯",    themes:["観光","享楽","海","南国","開放"],      suitable:["Pisces","Sagittarius","Cancer"],     memo:"帝都では珍しく熱帯の気候に属し、観光地としてはあまりにも有名。豊かな果実と水平線に沈む夕日の美しさは臣民であれば一度は訪れてみたいもの。" },
+  { name:"第9公國",  commander:"秋山祐少佐",      animal:"ハリネズミ",specialty:"スカッドミサイル",industry:"産油",        climate:"油田地帯", themes:["炎","石油","富裕","混沌","軍事"],     suitable:["Aries","Leo","Scorpio"],            memo:"帝國唯一の産油国。三年前に大規模な火災が発生し、いまもその火が消えていない。成金が多く、趣味が悪い。" },
+  { name:"第11公國", commander:"春木亮太朗大佐",  animal:"キツネ",   specialty:"椎茸",           industry:"林業",         climate:"森林",    themes:["自然","静寂","観察","持続","独立"],    suitable:["Virgo","Taurus","Cancer"],           memo:"国土の95％を森林が占める。他国に比べ開発が遅れている面はあるが、アウトドアブームにより観光地として注目されつつある。" },
+  { name:"第13公國", commander:"草薙護大佐",      animal:"羊",       specialty:"ガム",           industry:"精密機械工業", climate:"高原",    themes:["精密","牧草","時計","職人","寒冷"],    suitable:["Virgo","Capricorn","Taurus"],        memo:"その牧草地の多さから放牧が盛んであったが、近年は時計などの精密機械工業が主流。夏は涼しく、冬寒い。" }
+];
+
+const characters = [
+  { name:"楠本柊生帝國元帥", title:"皇任独裁官 / 第5公國最高司令官",     sun:"Capricorn", moon:"Leo",       mercury:"Sagittarius", mars:"Aries",    unit:"第5公國最高司令部" },
+  { name:"立花馨大将",       title:"統合幕僚総監 / 第4公國最高司令官",    sun:"Aries",     moon:"Cancer",    mercury:"Taurus",      mars:"Capricorn",unit:"第4公國最高司令部" },
+  { name:"定光寺輝信中将",   title:"統帥参謀総長 / 第7公國最高司令官",    sun:"Leo",       moon:"Virgo",     mercury:"Leo",         mars:"Aquarius", unit:"第7公國最高司令部" },
+  { name:"鳴海建一少将",     title:"宮廷近衛長官 / 第6公國最高司令官",    sun:"Scorpio",   moon:"Cancer",    mercury:"Scorpio",     mars:"Capricorn",unit:"第6公國最高司令部" },
+  { name:"天崎一桂少将",     title:"最高司令官代行 / 第8公國最高司令官",  sun:"Scorpio",   moon:"Leo",       mercury:"Sagittarius", mars:"Pisces",   unit:"第8公國最高司令部" },
+  { name:"草薙護大佐",       title:"第13公國最高司令官",                  sun:"Capricorn", moon:"Virgo",     mercury:"Capricorn",   mars:"Gemini",   unit:"第13公國最高司令部" },
+  { name:"春木亮太朗大佐",   title:"第11公國最高司令官",                  sun:"Aquarius",  moon:"Taurus",    mercury:"Aquarius",    mars:"Taurus",   unit:"第11公國最高司令部" },
+  { name:"星野和臣中佐",     title:"第3公國最高司令官",                   sun:"Aries",     moon:"Libra",     mercury:"Aries",       mars:"Aquarius", unit:"第3公國最高司令部" },
+  { name:"加納友緒中佐",     title:"第1公國最高司令官",                   sun:"Capricorn", moon:"Libra",     mercury:"Capricorn",   mars:"Virgo",    unit:"第1公國最高司令部" },
+  { name:"風間利之少佐",     title:"第2公國最高司令官",                   sun:"Scorpio",   moon:"Aries",     mercury:"Scorpio",     mars:"Scorpio",  unit:"第2公國最高司令部" },
+  { name:"秋山祐少佐",       title:"第9公國最高司令官",                   sun:"Gemini",    moon:"Cancer",    mercury:"Cancer",      mars:"Taurus",   unit:"第9公國最高司令部" },
+  { name:"長沢環大尉",       title:"元帥府付副官",                        sun:"Aries",     moon:"Capricorn", mercury:"Pisces",      mars:"Leo",      unit:"元帥府直轄" },
+  { name:"有馬竜ノ介大尉",   title:"元帥府付副官",                        sun:"Virgo",     moon:"Virgo",     mercury:"Virgo",       mars:"Taurus",   unit:"元帥府直轄" },
+  { name:"武藤優作中尉",     title:"元帥府付副官",                        sun:"Aquarius",  moon:"Scorpio",   mercury:"Aquarius",    mars:"Aquarius", unit:"元帥府直轄" }
+];
+
+function calculateRealSign(dateObj, planet) {
+  try {
+    const time = new Astronomy.AstroTime(dateObj);
+    var body;
+    if (planet === "Sun")     body = Astronomy.Body.Sun;
+    else if (planet === "Moon")    body = Astronomy.Body.Moon;
+    else if (planet === "Mercury") body = Astronomy.Body.Mercury;
+    else if (planet === "Venus")   body = Astronomy.Body.Venus;
+    else if (planet === "Mars")    body = Astronomy.Body.Mars;
+    else if (planet === "Jupiter") body = Astronomy.Body.Jupiter;
+    else if (planet === "Saturn")  body = Astronomy.Body.Saturn;
+    else if (planet === "Uranus")  body = Astronomy.Body.Uranus;
+    else if (planet === "Neptune") body = Astronomy.Body.Neptune;
+    else if (planet === "Pluto")   body = Astronomy.Body.Pluto;
+    else return "Aries";
+    const vector = Astronomy.GeoVector(body, time, false);
+    const ecliptic = Astronomy.Ecliptic(vector);
+    var lon = ecliptic.elon;
+    if (lon < 0) lon += 360;
+    return signs[Math.floor(lon / 30)];
+  } catch(err) {
+    console.error("星座計算エラー:", planet, err);
+    return "Leo";
+  }
+}
+
+function getLongitude(dateObj, planet) {
+  try {
+    const time = new Astronomy.AstroTime(dateObj);
+    var body;
+    if (planet === "Sun")     body = Astronomy.Body.Sun;
+    else if (planet === "Moon")    body = Astronomy.Body.Moon;
+    else if (planet === "Mercury") body = Astronomy.Body.Mercury;
+    else if (planet === "Venus")   body = Astronomy.Body.Venus;
+    else if (planet === "Mars")    body = Astronomy.Body.Mars;
+    else if (planet === "Jupiter") body = Astronomy.Body.Jupiter;
+    else if (planet === "Saturn")  body = Astronomy.Body.Saturn;
+    else if (planet === "Uranus")  body = Astronomy.Body.Uranus;
+    else if (planet === "Neptune") body = Astronomy.Body.Neptune;
+    else if (planet === "Pluto")   body = Astronomy.Body.Pluto;
+    else return 0;
+    const vector = Astronomy.GeoVector(body, time, false);
+    const ecliptic = Astronomy.Ecliptic(vector);
+    var lon = ecliptic.elon;
+    if (lon < 0) lon += 360;
+    return lon;
+  } catch(err) { return 0; }
+}
+
+function calcAngle(a, b) {
+  var d = Math.abs(a - b);
+  return d > 180 ? 360 - d : d;
+}
+
+function getAspectName(angle) {
+  if (angle <= 8)   return "Conjunction";
+  if (Math.abs(angle - 60)  <= 5)  return "Sextile";
+  if (Math.abs(angle - 90)  <= 6)  return "Square";
+  if (Math.abs(angle - 120) <= 6)  return "Trine";
+  if (Math.abs(angle - 180) <= 8)  return "Opposition";
+  return null;
+}
+
+function analyzeSpecialPatterns(dateObj) {
+  var planetList = ["Sun","Moon","Mercury","Venus","Mars","Jupiter","Saturn","Uranus","Neptune","Pluto"];
+  var lons = {};
+  for (var i = 0; i < planetList.length; i++) {
+    lons[planetList[i]] = getLongitude(dateObj, planetList[i]);
+  }
+  var found = [];
+  for (var i = 0; i < planetList.length; i++) {
+    for (var j = i + 1; j < planetList.length; j++) {
+      var angle = calcAngle(lons[planetList[i]], lons[planetList[j]]);
+      var asp = getAspectName(angle);
+      if (!asp) continue;
+      var key = planetList[i] + "-" + planetList[j] + "-" + asp;
+      if (specialPatterns[key]) {
+        found.push({ key: key, data: specialPatterns[key] });
+      }
+    }
+  }
+  return found;
+}
+
+function getCompatibility(a, b) {
+  if (a === b) return 94;
+  var elements = {
+    Fire: ["Aries","Leo","Sagittarius"],
+    Earth: ["Taurus","Virgo","Capricorn"],
+    Air: ["Gemini","Libra","Aquarius"],
+    Water: ["Cancer","Scorpio","Pisces"]
+  };
+  var getElement = function(sign) {
+    return Object.keys(elements).find(function(el){ return elements[el].indexOf(sign) >= 0; });
+  };
+  var ea = getElement(a), eb = getElement(b);
+  if (ea === eb) return 86;
+  if ((ea==="Fire"&&eb==="Air")||(ea==="Air"&&eb==="Fire")||(ea==="Earth"&&eb==="Water")||(ea==="Water"&&eb==="Earth")) return 78;
+  if ((ea==="Fire"&&eb==="Water")||(ea==="Water"&&eb==="Fire")||(ea==="Earth"&&eb==="Air")||(ea==="Air"&&eb==="Earth")) return 51;
+  return 64;
+}
+
+function createStat(label, value) {
+  return '<div class="stat"><div class="stat-row"><span>' + label + '</span><span>' + value + '%</span></div><div class="bar-bg"><div class="bar-fill" style="width:' + value + '%"></div></div></div>';
+}
+
+function runDiagnosis() {
+  var btn = document.getElementById("diagnoseBtn");
+  var resultDiv = document.getElementById("result");
+  btn.disabled = true;
+  resultDiv.innerHTML = '<p style="text-align:center;padding:40px;color:#c9a84c;">天体を解析中…</p>';
+
+  setTimeout(function() {
+    try {
+      if (typeof Astronomy === "undefined") throw new Error("Astronomy Engine の読み込みに失敗しました");
+
+      var dateStr = document.getElementById("birthdate").value;
+      if (!dateStr) throw new Error("生年月日を入力してください");
+
+      var hourVal = parseInt(document.getElementById("hour").value);
+      if (isNaN(hourVal) || hourVal < 0 || hourVal > 23) throw new Error("出生時間は0〜23で入力してください");
+
+      var parts = dateStr.split("-").map(Number);
+      var targetDate = new Date(parts[0], parts[1]-1, parts[2], hourVal, 0, 0);
+
+      var userSign = {
+        sun:     calculateRealSign(targetDate, "Sun"),
+        moon:    calculateRealSign(targetDate, "Moon"),
+        mercury: calculateRealSign(targetDate, "Mercury"),
+        mars:    calculateRealSign(targetDate, "Mars")
+      };
+
+      var userTrait = {
+        sun:     traits[userSign.sun].sun,
+        moon:    traits[userSign.moon].moon,
+        mercury: traits[userSign.mercury].mercury,
+        mars:    traits[userSign.mars].mars
+      };
+
+      var patterns = analyzeSpecialPatterns(targetDate);
+
+      // ---- 結果HTML構築 ----
+      var html = '<div class="result-title">── 配属下命書 ──</div>';
+
+      // 戦略特性グリッド
+      html += '<div class="traits-card">';
+      html += '<div class="field-label" style="margin-bottom:18px;">貴殿の戦略特性</div>';
+      html += '<div class="traits-grid">';
+      html += '<div class="trait-item"><span class="trait-key">戦闘目的（太陽:' + userSign.sun + '）</span><span class="trait-val">' + userTrait.sun + '</span></div>';
+      html += '<div class="trait-item"><span class="trait-key">精神力（月:' + userSign.moon + '）</span><span class="trait-val">' + userTrait.moon + '</span></div>';
+      html += '<div class="trait-item"><span class="trait-key">戦略思考（水星:' + userSign.mercury + '）</span><span class="trait-val">' + userTrait.mercury + '</span></div>';
+      html += '<div class="trait-item"><span class="trait-key">攻撃様式（火星:' + userSign.mars + '）</span><span class="trait-val">' + userTrait.mars + '</span></div>';
+      html += '</div>'; // traits-grid
+
+      html += '<hr class="divider">';
+
+      // 本質傾向
+      html += '<div class="section-label">本質傾向</div>';
+      html += '<div class="essence-block">';
+      html += (interpretation.sun[userSign.sun] || "");
+      if (interpretation.moon[userSign.moon]) {
+        html += '<br><span style="font-size:14px;color:var(--cream-dim);">' + interpretation.moon[userSign.moon] + '</span>';
+      }
+      html += '</div>';
+
+      // 特殊補正（パターンがある場合のみ）
+      if (patterns.length > 0) {
+        html += '<div class="section-label">天体配置による特殊補正</div>';
+        for (var pi = 0; pi < patterns.length; pi++) {
+          var pat = patterns[pi];
+          html += '<div class="correction-item">';
+          html += '<span class="correction-label">' + pat.data.label + '</span>';
+          html += ' <span class="correction-bonus">［' + pat.data.bonus + '］</span><br>';
+          html += pat.data.text;
+          html += '</div>';
+        }
+      }
+
+      html += '</div>'; // traits-card
+
+      // 公國適性
+      html += '<div class="result-title">── 地政学的公國適性 ──</div>';
+      for (var ni = 0; ni < nations.length; ni++) {
+        var nat = nations[ni];
+        var isSuitable = nat.suitable.indexOf(userSign.sun) >= 0 || nat.suitable.indexOf(userSign.mars) >= 0;
+        html += '<div class="traits-card">';
+        html += '<div class="cmd-header">';
+        html += '<div>';
+        html += '<div class="cmd-name">' + nat.name + '</div>';
+        html += '<div class="cmd-title">司令官: ' + nat.commander + '　／　環境: ' + nat.climate + ' ／ 象徴生物: ' + nat.animal + ' ／ 特産: ' + nat.specialty + ' ／ 主力産業: ' + nat.industry + '</div>';
+        html += '</div>';
+        html += '<div class="compatibility" style="font-size:16px;color:' + (isSuitable ? 'var(--gold-light)' : 'var(--cream-dim)') + ';">' + (isSuitable ? '【最良適性地域】' : '【標準適性地域】') + '</div>';
+        html += '</div>';
+        html += '<div class="performance" style="font-size:14px;">主要テーマ：' + nat.themes.map(function(t){ return '#' + t; }).join(' ') + '</div>';
+        html += '<div style="margin-top:10px;font-size:13px;color:var(--cream-dim);line-height:1.7;">' + nat.memo + '</div>';
+        html += '</div>';
+      }
+
+      // 司令官との適合評定
+      html += '<div class="result-title">── 各司令官との適合評定 ──</div>';
+
+      var results = characters.map(function(char) {
+        var p = getCompatibility(userSign.sun,     char.sun);
+        var m = getCompatibility(userSign.moon,    char.moon);
+        var s = getCompatibility(userSign.mercury, char.mercury);
+        var a = getCompatibility(userSign.mars,    char.mars);
+        var total = Math.floor((p*1.2 + m*1.15 + s*0.95 + a*0.9) / 4);
+        for (var xi = 0; xi < patterns.length; xi++) {
+          var bonusNum = parseInt(patterns[xi].data.bonus.replace(/[^0-9]/g, ""));
+          total += Math.floor(bonusNum / 5);
+        }
+        if (total > 100) total = 100;
+        return { char:char, total:total, p:p, m:m, s:s, a:a };
+      });
+
+      results.sort(function(a, b){ return b.total - a.total; });
+
+      for (var ri = 0; ri < results.length; ri++) {
+        var r = results[ri];
+        var performance =
+          r.total > 84 ? "この部隊の主力として、大規模作戦の中心任務を担う可能性が高い。" :
+          r.total > 76 ? "高い適応能力を持ち、重要局面において大きな戦果を期待される。" :
+          r.total > 67 ? "安定した補佐戦力として堅実に任務を遂行可能。" :
+                         "標準的適性。訓練次第で更なる戦力向上が見込まれる。";
+
+        html += '<div class="cmd-card">';
+        html += '<div class="cmd-header"><div>';
+        html += '<div class="cmd-name">' + r.char.name + '</div>';
+        html += '<div class="cmd-title">' + r.char.title + '</div>';
+        html += '</div><div class="compatibility">' + r.total + '%</div></div>';
+        html += '<div class="stats">' + createStat("戦闘目的", r.p) + createStat("精神力", r.m) + createStat("戦略思考", r.s) + createStat("攻撃様式", r.a) + '</div>';
+        html += '<div class="performance">' + performance + '</div>';
+        html += '<div class="unit">配属推奨：' + r.char.unit + '</div>';
+        html += '</div>';
+      }
+
+      html += '<button class="reset-btn" onclick="location.reload()">もう一度診断する</button>';
+      resultDiv.innerHTML = html;
+
+    } catch(err) {
+      console.error(err);
+      resultDiv.innerHTML = '<p style="color:#ff6b6b;text-align:center;padding:40px;line-height:1.8;">' + err.message + '</p>';
+    } finally {
+      btn.disabled = false;
+    }
+  }, 500);
+}
+
+document.getElementById("diagnoseBtn").addEventListener("click", runDiagnosis);
+</script>
+</body>
 </html>
