@@ -399,7 +399,7 @@ function runDiagnosis() {
 
       html += '</div>'; // traits-card
 
-      // 公國適性スコア計算
+     // 公國適性スコア計算
       var nationResults = nations.map(function(nat) {
         var score = 0;
         var reasons = [];
@@ -407,12 +407,14 @@ function runDiagnosis() {
           score += 30; reasons.push("国家理念への適応性が高い");
         }
         if (nat.affinity && nat.affinity.moon && nat.affinity.moon.indexOf(userSign.moon) >= 0) {
-          score += 25; reasons.push("國民性との精神親和性が高い");
+          score += 25; reasons.push("国民性との精神親和性が高い");
         }
         if (nat.affinity && nat.affinity.venus && nat.affinity.venus.indexOf(userSign.venus) >= 0) {
           score += 20; reasons.push("文化・生活感覚への適応性を持つ");
         }
-        if (score < 35) score += 35;
+        // 太陽30・月25・金星20の3軸、最大75点
+        // 最低保証: 0点なら35、1軸一致なら最低35になるよう調整
+        if (score === 0) score = 35;
         if (score > 100) score = 100;
         return { nation: nat, score: score, reasons: reasons };
       });
@@ -517,4 +519,4 @@ function runDiagnosis() {
 document.getElementById("diagnoseBtn").addEventListener("click", runDiagnosis);
 </script>
 </body>
-</html>       
+</html>
