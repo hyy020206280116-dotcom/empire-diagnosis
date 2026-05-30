@@ -404,13 +404,13 @@ function runDiagnosis() {
         var score = 0;
         var reasons = [];
         if (nat.affinity && nat.affinity.sun && nat.affinity.sun.indexOf(userSign.sun) >= 0) {
-          score += 30; reasons.push("国家理念への適応性が高い");
+          score += 40; reasons.push("国家理念への適応性が高い");
         }
         if (nat.affinity && nat.affinity.moon && nat.affinity.moon.indexOf(userSign.moon) >= 0) {
-          score += 25; reasons.push("国民性との精神親和性が高い");
+          score += 33; reasons.push("国民性との精神親和性が高い");
         }
         if (nat.affinity && nat.affinity.venus && nat.affinity.venus.indexOf(userSign.venus) >= 0) {
-          score += 20; reasons.push("文化・生活感覚への適応性を持つ");
+          score += 27; reasons.push("文化・生活感覚への適応性を持つ");
         }
         // 太陽30・月25・金星20の3軸、最大75点
         // 最低保証: 0点なら35、1軸一致なら最低35になるよう調整
